@@ -7,12 +7,12 @@ from insert import insert
 # phantom = np.load("phantom_small.npy")
 X, Y = np.mgrid[-5*np.pi:5*np.pi:64*1j, -5*np.pi:5*np.pi:64*1j]
 
-y1 = np.sin(Y)
+y1 = np.sin(X)
 y2 = np.sin(X/np.sqrt(2) + Y/np.sqrt(2))
 
 phantom = y1 
 
-# phantom = np.pad(phantom, pad_width = 200, mode = "constant", constant_values = 0)
+phantom = np.pad(phantom, pad_width = 200, mode = "constant", constant_values = 0)
 
 
 def low_pass_filter(img):
@@ -118,23 +118,24 @@ sinogram = radon(phantom, thetas)
 recon1 = iradon(sinogram, thetas)
 model, recon2 = recon_f(sinogram, thetas)
 
-a, b = np.real(ft_origin), np.real(model)
+# a, b = np.real(ft_origin), np.real(model)
 
-fig, (ax1, ax2) = plt.subplots(ncols = 2)
-ax1.plot(a[a.shape[0]//2, :])
-ax2.plot(b[a.shape[0]//2, :])
+# fig, (ax1, ax2) = plt.subplots(ncols = 2)
+# ax1.plot(a[a.shape[0]//2, :])
+# ax2.plot(b[a.shape[0]//2, :])
 # ax2.axis([0,128+400, -600, 600])
 # ax1.axis([0,128+400, -600, 600])
 
 
 # imgs = [phantom, recon1, np.abs(model), np.abs(ft_origin), recon2]
 # titles = ["origin", "filtered back proj", "inserted model abs", "origin model", "recon"]
-imgs = [np.real(ft_origin), np.real(model), recon2, recon1]
-# titles = ["origin",  "origin", "recon", "recon", "bp"]
+imgs = [phantom, np.abs(ft_origin), np.abs(model), recon2]
+titles = ["origin", "FT origin",  "inserted", "recon by insertion"]
 
 fig, axes = plt.subplots(ncols = len(imgs))
 for i, ax in enumerate(axes):
     ax.imshow(imgs[i])
-    # ax.set_title(titles[i])
-
+    ax.set_title(titles[i])
+ax.set_xlabel("angles = 0:180:1")
+plt.savefig("imgs/sin3_FT_pad.png")
 plt.show()
