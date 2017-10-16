@@ -1,5 +1,3 @@
 *.c
 build/
 *.so
-*.ipynb
-.ipynb_checkpoints/
