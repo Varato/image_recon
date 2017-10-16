@@ -4,13 +4,30 @@ import scipy.interpolate
 from scipy.ndimage.interpolation import rotate
 from insert import insert
 
-ph = np.load("phantom_small.npy")
+origin = np.load("phantom_small.npy")
 
-ft_ph = np.fft.fftshift(np.fft.fft2(ph))
+ft_ph = np.fft.fft2(origin)
 
-r = ft_ph.real
-i = ft_ph.imag
-a = ft_ph.angle
+noise = np.random.normal(loc = 1, scale = 10, size = origin.shape)
+# noise = np.fft.fft2(noise)
 
-plt.plot(ft_ph[ft_ph.shape[0]//2, :])
+ft_ph = ft_ph.real + 1j*(ft_ph.imag + noise)
+
+# r = ft_ph.real
+# i = ft_ph.imag
+# a = ft_ph.angle
+
+# plt.plot(ft_ph[ft_ph.shape[0]//2, :])
+# plt.show()
+
+recon = np.fft.ifft2(ft_ph).real
+
+imgs = [origin, recon]
+
+fig, axes = plt.subplots(ncols = len(imgs))
+
+for i, ax in enumerate(axes):
+    ax.imshow(imgs[i])
+
 plt.show()
+

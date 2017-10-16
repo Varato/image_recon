@@ -4,15 +4,15 @@ import scipy.interpolate
 from scipy.ndimage.interpolation import rotate
 from insert import insert
 
-# phantom = np.load("phantom_small.npy")
-X, Y = np.mgrid[-5*np.pi:5*np.pi:64*1j, -5*np.pi:5*np.pi:64*1j]
+phantom = np.load("phantom_small.npy")
+# X, Y = np.mgrid[-5*np.pi:5*np.pi:64*1j, -5*np.pi:5*np.pi:64*1j]
 
-y1 = np.sin(X)
-y2 = np.sin(X/np.sqrt(2) + Y/np.sqrt(2))
+# y1 = np.sin(X)
+# y2 = np.sin(X/np.sqrt(2) + Y/np.sqrt(2))
 
-phantom = y1 
+# phantom = y1 + y2
 
-phantom = np.pad(phantom, pad_width = 200, mode = "constant", constant_values = 0)
+# phantom = np.pad(phantom, pad_width = [[100,101],[100,101]], mode = "constant", constant_values = 0)
 
 
 def low_pass_filter(img):
@@ -52,6 +52,18 @@ def rotate_img(img, theta):
     rotated_img = np.array([f(v[0], v[1]) for v in rotated_frame])
     
     return rotated_img.reshape([n0,n1])
+
+def slices_gen(img, thetas):
+    l_max = np.max(img.shape)
+    slices = np.zeros([len(thetas), l_max], dtype = np.float64)
+    for i, theta in enumerate(thetas):
+        rotated_img = rotate(img, -theta, reshape = False, prefilter = False)
+        mid = rotated_img[rotated_img.shape[0]//2, :]
+        pad_width = [int(np.floor(l_max - len(mid))/2.), int(np.ceil((l_max - len(mid))/2.))]
+        mid = np.pad(mid, pad_width, mode = "constant", constant_values = 0)
+        slices[i] = mid
+    return slices
+
 
 
 def radon(img, thetas):
@@ -118,6 +130,9 @@ sinogram = radon(phantom, thetas)
 recon1 = iradon(sinogram, thetas)
 model, recon2 = recon_f(sinogram, thetas)
 
+sinogram2 = radon(recon1, thetas)
+sinogram3 = radon(recon2, thetas)
+
 # a, b = np.real(ft_origin), np.real(model)
 
 # fig, (ax1, ax2) = plt.subplots(ncols = 2)
@@ -127,15 +142,22 @@ model, recon2 = recon_f(sinogram, thetas)
 # ax1.axis([0,128+400, -600, 600])
 
 
-# imgs = [phantom, recon1, np.abs(model), np.abs(ft_origin), recon2]
-# titles = ["origin", "filtered back proj", "inserted model abs", "origin model", "recon"]
-imgs = [phantom, np.abs(ft_origin), np.abs(model), recon2]
-titles = ["origin", "FT origin",  "inserted", "recon by insertion"]
+# imgs = [phantom, recon1, recon2]
+# imgs = [phantom, np.abs(ft_origin), np.abs(model), recon2]
+# imgs = [sinogram, sinogram2, sinogram3]
+# # titles = ["origin", "FT origin",  "inserted", "recon by insertion"]
+# # titles = ["origin", "recon by FBP", "recon by Insertion"]
+# titles = ["a", "b", "c"]
+# fig, axes = plt.subplots(ncols = len(imgs))
+# for i, ax in enumerate(axes):
+#     ax.imshow(imgs[i])
+#     ax.set_yticks([])
+#     ax.set_title(titles[i])
+# ax.set_xlabel("angles = 0:180:1")
 
-fig, axes = plt.subplots(ncols = len(imgs))
-for i, ax in enumerate(axes):
-    ax.imshow(imgs[i])
-    ax.set_title(titles[i])
-ax.set_xlabel("angles = 0:180:1")
-plt.savefig("imgs/sin3_FT_pad.png")
+plt.plot(sinogram3[:,1], 'b')
+plt.plot(sinogram2[:,1], "r")
+plt.tight_layout()
+# plt.savefig("imgs/phan3_pad.png")
+
 plt.show()
