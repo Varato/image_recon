@@ -25,7 +25,7 @@ But at the same angluar seperation, FBP works well, especially when padded.
 
 As can be seen, after padded, FBP can reconstruct the image better than unpadded. Insertion seems "wrapped".
 
-#### 3. test for insertion algorithm
+#### 3. Test for insertion algorithm
 
 To confirm the correctness of the slice-insertion program, the middle slices of the phantom is taken directly at different orientations, and inserted back to get the original image.
 ![](imgs/mid_slice_insertion.png)
