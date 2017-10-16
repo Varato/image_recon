@@ -23,7 +23,7 @@ def low_pass_filter(img):
     y -= n1//2
     r = np.sqrt(x*x + y*y)
 
-    fil = np.fft.ifftshift(np.where(r < 2*min(n0, n1)/3, 1, 0))
+    fil = np.fft.ifftshift(np.where(r < min(n0, n1)/3, 1, 0))
 
     filtered_img = np.fft.ifft2( np.fft.fft2(img) * fil ).real
     return filtered_img
@@ -104,7 +104,7 @@ def recon_f(sinogram, thetas):
     y -= n1//2
     r = np.sqrt(x*x + y*y)
 
-    fil = np.fft.ifftshift(np.where(r < 2*n0/3, 1, 0))
+    fil = np.fft.ifftshift(np.where(r < n0/3, 1, 0))
     # fil = 1 #np.abs(np.fft.fftfreq(n0)).reshape((-1, 1))
     ft_sino = np.fft.fftshift( np.fft.fft(sinogram, axis = 0), axes = 0 )
     slices_real = np.real(ft_sino).T

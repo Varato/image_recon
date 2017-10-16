@@ -34,4 +34,4 @@ To confirm the correctness of the slice-insertion program, the middle slices of 
 1. A filter (ramp, |k|) is used in FBP, but not in Insertion. Because by interpolation, the values are averaged by normalized weights.
 2. Image center: dx//2, dy//2. Coordinate system: consistent with array index system.
 3. fftshift before showing Fourier images. But ifftshift before ifft.
-
+4. A 2/3 low pass filter is applied to the image.
