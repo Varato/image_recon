@@ -11,7 +11,7 @@ ft_ph = np.fft.fft2(origin)
 noise = np.random.normal(loc = 1, scale = 10, size = origin.shape)
 # noise = np.fft.fft2(noise)
 
-ft_ph = ft_ph.real + 1j*(ft_ph.imag + noise)
+ft_ph = np.abs(ft_ph) * np.exp( 1j* np.pi) 
 
 # r = ft_ph.real
 # i = ft_ph.imag
